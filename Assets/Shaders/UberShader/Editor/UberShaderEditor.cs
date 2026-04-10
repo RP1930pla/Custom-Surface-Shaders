@@ -89,6 +89,7 @@ public class UberShaderEditor : ShaderGUI
         public MaterialProperty _DecalTexture;
         public MaterialProperty _DecalTextureB;
 
+        public MaterialProperty _AcessibilityColor;
 
 
 
@@ -140,6 +141,8 @@ public class UberShaderEditor : ShaderGUI
             _ZWrite = FindProperty(nameof(_ZWrite), properties, false);
             _Surface = FindProperty(nameof(_Surface), properties, false);
             _Debug = FindProperty(nameof(_Debug), properties, false);
+
+            _AcessibilityColor = FindProperty(nameof(_AcessibilityColor), properties, false);
 
 
         }
@@ -239,6 +242,8 @@ public class UberShaderEditor : ShaderGUI
             if (uberLitProperties._SSSMap.textureValue != null)
             {
                 material.EnableKeyword("_SUBSURFACE_SCATTER");
+                //material.DisableKeyword("_SUBSURFACE_SCATTER");
+
                 materialEditor.ShaderProperty(uberLitProperties._SSS_Power, uberLitProperties._SSS_Power.displayName);
                 materialEditor.ShaderProperty(uberLitProperties._SSS_Distortion, uberLitProperties._SSS_Distortion.displayName);
                 materialEditor.ShaderProperty(uberLitProperties._SSS_Scale, uberLitProperties._SSS_Scale.displayName);
@@ -303,6 +308,7 @@ public class UberShaderEditor : ShaderGUI
         {
             materialEditor.ShaderProperty(uberLitProperties._SpecularHighlights, uberLitProperties._SpecularHighlights.displayName);
             materialEditor.ShaderProperty(uberLitProperties._EnvironmentReflections, uberLitProperties._EnvironmentReflections.displayName);
+            materialEditor.ShaderProperty(uberLitProperties._AcessibilityColor, uberLitProperties._AcessibilityColor.displayName);
         }
         
 

@@ -124,6 +124,7 @@ public class RenderBrushstrokes : ScriptableRendererFeature
                 builder.UseTexture(passData.bufferTexture, AccessFlags.Read);
                 builder.SetRenderAttachment(resourceData.activeColorTexture, 0, AccessFlags.Write);
 
+                //passData.material.SetTexture(Shader.PropertyToID("_PaintBuffer"), passData.bufferTexture);
                 builder.SetRenderFunc((BlitPassData data, RasterGraphContext context) => ExecuteBlitPass(data, context));
 
             }

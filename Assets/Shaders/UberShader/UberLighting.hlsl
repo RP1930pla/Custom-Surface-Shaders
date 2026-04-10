@@ -87,10 +87,7 @@
             float3 subColor = Saturate(extraData.diffuseTex, 1.5) * extraData.sss_color;
             subColor *= lightColor;
             float3 SSSIrradiance = subColor * radius * (sss + SSSIrradianceVD) * extraData.sss_mask;
-
             return (brdf * radiance) + SSSIrradiance;
-        #else
-            return brdf * radiance * radiance;
         #endif
 
         return brdf * radiance;

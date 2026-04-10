@@ -72,6 +72,8 @@ Shader "RP/UberShader PBR"
         // Editmode props
         _QueueOffset("Queue offset", Float) = 0.0
 
+        _AcessibilityColor("Accesibility Color", Color) = (1,0,0,1)
+
         // ObsoleteProperties
         [HideInInspector] _MainTex("BaseMap", 2D) = "white" {}
         [HideInInspector] _Color("Base Color", Color) = (1, 1, 1, 1)
@@ -110,6 +112,7 @@ Shader "RP/UberShader PBR"
             #pragma instancing_options renderinglayer
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
             #define SHADING_UNITY_PBR
+            #include "Assets/Shaders/Additional Passes/AdditionalPassesProps.hlsl"
             #include "Assets/Shaders/UberShader/UberSurfaceInput.hlsl"
             #include "Assets/Shaders/UberShader/UberLitPass.hlsl"
 
@@ -258,6 +261,8 @@ Shader "RP/UberShader PBR"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
             ENDHLSL
         }
+
+        UsePass "Hidden/SH_HighlightRender/HighlightPass"
     }
         FallBack "Hidden/Universal Render Pipeline/FallbackError"
         CustomEditor "UberShaderEditor"
