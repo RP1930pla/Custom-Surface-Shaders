@@ -11,8 +11,7 @@ Material:
   m_Shader: {fileID: 4800000, guid: ccf09b7b0c6061f48b0daeefa2bd26d5, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - _SUBSURFACE_SCATTER
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 6
   m_EnableInstancingVariants: 0
@@ -24,7 +23,7 @@ Material:
     RenderType: Opaque
   disabledShaderPasses:
   - MOTIONVECTORS
-  m_LockedProperties: _DetailMask
+  m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
@@ -69,7 +68,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SSSMap:
-        m_Texture: {fileID: 2800000, guid: eac7a026f73e58648a8c0d46005f00b6, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
@@ -114,10 +113,10 @@ Material:
     - _Parallax: 0.005
     - _QueueOffset: -2
     - _ReceiveShadows: 1
-    - _SSS_Distortion: 0.15
-    - _SSS_Power: 1.75
-    - _SSS_Scale: 1
-    - _Smoothness: 1
+    - _SSS_Distortion: 0.31
+    - _SSS_Power: 1.24
+    - _SSS_Scale: 0.55
+    - _Smoothness: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -127,11 +126,12 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.004538993, g: 0.9622641, b: 0.008046059, a: 0.34117648}
+    - _AcessibilityColor: {r: 1, g: 0, b: 0, a: 1}
+    - _BaseColor: {r: 1, g: 0.8148778, b: 0.7028302, a: 0.34117648}
     - _Color: {r: 0.6179245, g: 0.9999998, b: 1, a: 1}
     - _Debug: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 0}
-    - _SSS_Color: {r: 0.19152577, g: 0.9137255, b: 0, a: 1}
+    - _SSS_Color: {r: 1, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
