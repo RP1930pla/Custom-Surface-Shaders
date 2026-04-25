@@ -90,6 +90,10 @@ public class UberShaderEditor : ShaderGUI
         public MaterialProperty _DecalTextureB;
 
         public MaterialProperty _AcessibilityColor;
+        public MaterialProperty _FresnelDebug;
+        public MaterialProperty _Tiling;
+        public MaterialProperty _BrushStrokeTexture;
+
 
 
 
@@ -143,6 +147,9 @@ public class UberShaderEditor : ShaderGUI
             _Debug = FindProperty(nameof(_Debug), properties, false);
 
             _AcessibilityColor = FindProperty(nameof(_AcessibilityColor), properties, false);
+            _FresnelDebug = FindProperty(nameof(_FresnelDebug), properties, false);
+            _Tiling = FindProperty(nameof(_Tiling), properties, false);
+            _BrushStrokeTexture = FindProperty(nameof(_BrushStrokeTexture), properties, false);
 
 
         }
@@ -153,6 +160,7 @@ public class UberShaderEditor : ShaderGUI
     public bool detailInputs = true;
     public bool emission = false;
     public bool advancedOptions = true;
+    public bool additionalPasses = true;
 
     public BlendModes blendModeSelected;
     public CullingModes cullingModeSelected;
@@ -308,9 +316,17 @@ public class UberShaderEditor : ShaderGUI
         {
             materialEditor.ShaderProperty(uberLitProperties._SpecularHighlights, uberLitProperties._SpecularHighlights.displayName);
             materialEditor.ShaderProperty(uberLitProperties._EnvironmentReflections, uberLitProperties._EnvironmentReflections.displayName);
-            materialEditor.ShaderProperty(uberLitProperties._AcessibilityColor, uberLitProperties._AcessibilityColor.displayName);
         }
-        
+
+        additionalPasses = EditorGUILayout.Foldout(additionalPasses, "Additional Passes");
+        if (additionalPasses) 
+        {
+            materialEditor.ShaderProperty(uberLitProperties._AcessibilityColor, uberLitProperties._AcessibilityColor.displayName);
+            materialEditor.ShaderProperty(uberLitProperties._FresnelDebug, uberLitProperties._FresnelDebug.displayName);
+            materialEditor.ShaderProperty(uberLitProperties._Tiling, uberLitProperties._Tiling.displayName);
+            materialEditor.TexturePropertySingleLine(new GUIContent(uberLitProperties._BrushStrokeTexture.displayName), uberLitProperties._BrushStrokeTexture);
+        }
+
 
 
     }

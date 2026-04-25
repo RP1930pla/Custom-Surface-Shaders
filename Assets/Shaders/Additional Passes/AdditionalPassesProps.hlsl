@@ -6,7 +6,7 @@
             #include "Assets/Shaders/UberShader/UberSurfaceData.hlsl"
 
             #define CUSTOM_MATERIAL_PROPERTIES\
-            half4 _AcessibilityColor;
+            half4 _AcessibilityColor;\
             half2 _FresnelDebug;\
             half _Tiling;
 

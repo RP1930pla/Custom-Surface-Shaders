@@ -73,6 +73,9 @@ Shader "RP/UberShader PBR"
         _QueueOffset("Queue offset", Float) = 0.0
 
         _AcessibilityColor("Accesibility Color", Color) = (1,0,0,1)
+        _FresnelDebug("Fresnel Brushstroke", Vector) = (0,1,0,0)
+        _BrushStrokeTexture("Brushtroke Texture", 2D) = "grey" {}
+        _Tiling("Brushstroke Tiling", Float) = 1.0
 
         // ObsoleteProperties
         [HideInInspector] _MainTex("BaseMap", 2D) = "white" {}
@@ -263,6 +266,7 @@ Shader "RP/UberShader PBR"
         }
 
         UsePass "Hidden/SH_HighlightRender/HighlightPass"
+        UsePass "Hidden/SH_BrushStrokes/BrushStrokes Pass"
     }
         FallBack "Hidden/Universal Render Pipeline/FallbackError"
         CustomEditor "UberShaderEditor"

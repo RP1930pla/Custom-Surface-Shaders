@@ -31,7 +31,7 @@ Shader "Hidden/SH_BrushStrokes"
             {
                 float4 positionHCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float3 pivot : TEXCOORD1;
+                float4 pivot : TEXCOORD1;
                 float3 posOS : TEXCOORD2;
                 float3 normalOS : TEXCOORD3;
                 float3 posWS : TEXCOORD4;
@@ -45,7 +45,7 @@ Shader "Hidden/SH_BrushStrokes"
             {
                 Varyings OUT;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
-                OUT.pivot = TransformObjectToHClip(half3(0,0,0));
+                OUT.pivot = mul(UNITY_MATRIX_VP, UNITY_MATRIX_M._m03_m13_m23);
                 OUT.posOS = IN.positionOS;
                 OUT.normalOS = IN.normal;
                 OUT.uv = IN.uv;
@@ -78,9 +78,19 @@ Shader "Hidden/SH_BrushStrokes"
 
             half4 frag(Varyings IN) : SV_Target
             {
-                float tiling = RemapX(IN.pivot.z, float2(1,0), float2(20,0.2)) * _Tiling;
-                float3 textureSampled = TriplanarSampling(IN.posOS, IN.normalOS, 1.0, tiling, _BrushStrokeTexture, sampler_BrushStrokeTexture);
+                float tiling = RemapX(IN.positionHCS.w, float2(_FresnelDebug.x, _FresnelDebug.y), float2(0,1));
+                tiling = saturate(tiling);
+
+                tiling = lerp(_Tiling, 0.1, tiling);
+
                 
+                float3 textureSampled = TriplanarSampling(IN.posOS, IN.normalOS, 1.0, tiling, _BrushStrokeTexture, sampler_BrushStrokeTexture);
+                float depth = RemapX(IN.positionHCS.w, float2(0,10), float2(0,1));
+                depth = saturate(depth);
+                depth = smoothstep(0.2, 0.5, depth);
+                //return depth;
+                textureSampled = lerp(half3(0.5,0.5,0.5), textureSampled, depth);
+
                 float3 viewDir = normalize(_WorldSpaceCameraPos.xyz - IN.posWS.xyz);
                 float fresnel = FresnelEffect(IN.normalWS, viewDir, 1);
                 fresnel = smoothstep(_FresnelDebug.x, _FresnelDebug.y, 1-fresnel);
