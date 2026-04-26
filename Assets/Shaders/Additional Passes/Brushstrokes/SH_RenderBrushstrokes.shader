@@ -80,14 +80,14 @@ Shader "Hidden/SH_BrushStrokes"
             {
                 float tiling = RemapX(IN.positionHCS.w, float2(_FresnelDebug.x, _FresnelDebug.y), float2(0,1));
                 tiling = saturate(tiling);
-
-                tiling = lerp(_Tiling, 0.1, tiling);
+                //return tiling;
+                tiling = lerp(_Tiling, _Tiling * 0.01, tiling);
 
                 
                 float3 textureSampled = TriplanarSampling(IN.posOS, IN.normalOS, 1.0, tiling, _BrushStrokeTexture, sampler_BrushStrokeTexture);
-                float depth = RemapX(IN.positionHCS.w, float2(0,10), float2(0,1));
+                float depth = RemapX(IN.positionHCS.w, float2(0,_FresnelDebug.y * 0.5), float2(0,1));
                 depth = saturate(depth);
-                depth = smoothstep(0.2, 0.5, depth);
+                depth = smoothstep(0.1, 0.5, depth);
                 //return depth;
                 textureSampled = lerp(half3(0.5,0.5,0.5), textureSampled, depth);
 

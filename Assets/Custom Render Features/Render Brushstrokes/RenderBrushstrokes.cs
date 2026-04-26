@@ -79,6 +79,7 @@ public class RenderBrushstrokes : ScriptableRendererFeature
             UniversalCameraData cameraData = frameData.Get<UniversalCameraData>();
 
             TextureHandle brushStrokesRenderTexture;
+            TextureHandle brushStrokesRenderTextureDepth;
 
             const string passBrush = "Render Brushstrokes";
             using (var builder = renderGraph.AddRasterRenderPass<BrushPassData>(passBrush, out var passData))
@@ -95,12 +96,25 @@ public class RenderBrushstrokes : ScriptableRendererFeature
                     clearColor = Color.clear
                 };
 
+                TextureDesc textureDescDepth = new TextureDesc(cameraDesc.width, cameraDesc.height)
+                {
+                    colorFormat = UnityEngine.Experimental.Rendering.GraphicsFormat.D32_SFloat,
+                    depthBufferBits = DepthBits.Depth32,
+                    useMipMap = false,
+                    msaaSamples = MSAASamples.None,
+                    name = "_BrushStrokeBuffer",
+                    clearBuffer = true,
+                    clearColor = Color.clear
+                };
+
                 brushStrokesRenderTexture = renderGraph.CreateTexture(textureDesc);
+                brushStrokesRenderTextureDepth = renderGraph.CreateTexture(textureDescDepth);
+
                 builder.SetRenderAttachment(brushStrokesRenderTexture, 0, AccessFlags.Write);
 
                 SortingSettings sortingSettings = new SortingSettings(cameraData.camera)
                 {
-                    criteria = SortingCriteria.CommonOpaque
+                    criteria = SortingCriteria.RenderQueue
                 };
 
                 FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
@@ -108,6 +122,7 @@ public class RenderBrushstrokes : ScriptableRendererFeature
                 RendererListParams listParams = new RendererListParams(renderingData.cullResults, drawingSettings, filteringSettings);
                 passData.rendererListHandle = renderGraph.CreateRendererList(listParams);
                 builder.UseRendererList(passData.rendererListHandle);
+                builder.SetRenderAttachmentDepth(brushStrokesRenderTextureDepth, AccessFlags.Write);
 
                 builder.SetRenderFunc((BrushPassData data, RasterGraphContext context) => ExecuteRenderPass(data, context));
             }
