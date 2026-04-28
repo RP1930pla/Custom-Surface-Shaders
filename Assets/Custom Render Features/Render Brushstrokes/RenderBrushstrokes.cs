@@ -66,7 +66,8 @@ public class RenderBrushstrokes : ScriptableRendererFeature
 
         static void ExecuteBlitPass(BlitPassData data, RasterGraphContext context) 
         {
-            data.material.SetTexture(Shader.PropertyToID("_PaintBuffer"), data.bufferTexture);
+            Shader.SetGlobalTexture("_PaintBuffer", data.bufferTexture);
+            //data.material.SetTexture(Shader.PropertyToID("_PaintBuffer"), data.bufferTexture);
             Blitter.BlitTexture(context.cmd, data.sourceTexture, new Vector4(1, 1, 0, 0), data.material, 0);
         }
 
@@ -136,7 +137,7 @@ public class RenderBrushstrokes : ScriptableRendererFeature
                 passData.bufferTexture = brushStrokesRenderTexture;
                 passData.material = settings.material;
 
-                builder.UseTexture(passData.bufferTexture, AccessFlags.Read);
+                builder.UseTexture(passData.bufferTexture, AccessFlags.ReadWrite);
                 builder.SetRenderAttachment(resourceData.activeColorTexture, 0, AccessFlags.Write);
 
                 //passData.material.SetTexture(Shader.PropertyToID("_PaintBuffer"), passData.bufferTexture);

@@ -267,6 +267,9 @@ Shader "RP/UberShader PBR"
 
         UsePass "Hidden/SH_HighlightRender/HighlightPass"
         UsePass "Hidden/SH_BrushStrokes/BrushStrokes Pass"
+
+        UsePass "Hidden/SH_RenderNormals/Smooth Normals"
+        UsePass "Hidden/SH_RenderBlendDepth/Smooth Normals Depth"
     }
         FallBack "Hidden/Universal Render Pipeline/FallbackError"
         CustomEditor "UberShaderEditor"
