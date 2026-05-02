@@ -13,6 +13,10 @@
     #define MODIFY_SURFACE(input, surfaceData, extraData)
 #endif
 
+#if !defined(MODIFY_INPUTDATA)
+    #define MODIFY_INPUTDATA(input, inputData)
+#endif
+
 #ifndef CUSTOM_INTERPOLATORS
     #if defined(LOD_FADE_CROSSFADE)
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
@@ -274,6 +278,8 @@ void LitPassFragment(
     ApplyDecalToSurfaceData(input.positionCS, surfaceData, inputData);
 #endif
 
+    MODIFY_INPUTDATA(input, inputData);
+
     InitializeBakedGIData(input, inputData);
     #ifdef SHADING_OREN_NAYAR
     half4 color = FragmentOrenNayer(inputData, surfaceData, extraData);
@@ -287,6 +293,9 @@ void LitPassFragment(
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
     color.a = OutputAlpha(color.a, IsSurfaceTypeTransparent(_Surface));
     outColor = color;
+
+    //outColor = half4(inputData.normalWS.xyz,1);
+    //outColor = half4(input.positionCS.xy/ input.positionCS.w,0,0);
 
 #ifdef _WRITE_RENDERING_LAYERS
     outRenderingLayers = EncodeMeshRenderingLayer();
