@@ -25,11 +25,13 @@ Shader "Hidden/SH_BrushStrokes"
                 float4 positionOS : POSITION;
                 float3 normal : NORMAL;
                 float2 uv : TEXCOORD0;
+                float3 tangent : TANGENT;
             };
 
             struct Varyings
             {
                 float4 positionHCS : SV_POSITION;
+                float3 tangent : TEXCOORD6;
                 float2 uv : TEXCOORD0;
                 float4 pivot : TEXCOORD1;
                 float3 posOS : TEXCOORD2;
@@ -51,6 +53,7 @@ Shader "Hidden/SH_BrushStrokes"
                 OUT.uv = IN.uv;
                 OUT.posWS = TransformObjectToWorld(IN.positionOS.xyz);
                 OUT.normalWS = TransformObjectToWorldNormal(IN.normal);
+                OUT.tangent = IN.tangent;
                 return OUT;
             }
 
@@ -78,16 +81,19 @@ Shader "Hidden/SH_BrushStrokes"
 
             half4 frag(Varyings IN) : SV_Target
             {
-                float tiling = RemapX(IN.positionHCS.w, float2(_FresnelDebug.x, _FresnelDebug.y), float2(0,1));
-                tiling = saturate(tiling);
+                float depthTiling = Linear01Depth(IN.positionHCS.z/IN.positionHCS.w, _ZBufferParams);
+                //float tiling = RemapX(depthTiling, float2(_FresnelDebug.x, _FresnelDebug.y), float2(0,1));
+                //tiling = saturate(tiling);
                 //return tiling;
-                tiling = lerp(_Tiling, _Tiling * 0.01, tiling);
+                depthTiling = smoothstep(0.2, 1.0, depthTiling);
 
-                
-                float3 textureSampled = TriplanarSampling(IN.posOS, IN.normalOS, 1.0, tiling, _BrushStrokeTexture, sampler_BrushStrokeTexture);
-                float depth = RemapX(IN.positionHCS.w, float2(0,_FresnelDebug.y * 0.5), float2(0,1));
-                depth = saturate(depth);
-                depth = smoothstep(0.1, 0.5, depth);
+                float tiling = lerp(0.4,0.03, depthTiling);
+                //return tiling;
+                float3 normalSP = mul(UNITY_MATRIX_VP, float4(IN.normalWS.xyz,1));
+                float3 textureSampled = TriplanarSampling(IN.posWS, IN.normalWS, 0.5, 0.1, _BrushStrokeTexture, sampler_BrushStrokeTexture);
+                float depth = Linear01Depth(IN.positionHCS.z/IN.positionHCS.w, _ZBufferParams);
+                //depth = saturate(depth);
+                depth = smoothstep(0.0, 0.8, depth);
                 //return depth;
                 textureSampled = lerp(half3(0.5,0.5,0.5), textureSampled, depth);
 
