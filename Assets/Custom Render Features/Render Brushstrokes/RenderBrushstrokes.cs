@@ -103,7 +103,7 @@ public class RenderBrushstrokes : ScriptableRendererFeature
                     depthBufferBits = DepthBits.Depth32,
                     useMipMap = false,
                     msaaSamples = MSAASamples.None,
-                    name = "_BrushStrokeBuffer",
+                    name = "_BrushStrokeBufferDepth",
                     clearBuffer = true,
                     clearColor = Color.clear
                 };
