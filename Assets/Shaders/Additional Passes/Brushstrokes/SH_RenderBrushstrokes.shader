@@ -53,6 +53,9 @@ Shader "Hidden/SH_BrushStrokes"
                 OUT.uv = IN.uv;
                 OUT.posWS = TransformObjectToWorld(IN.positionOS.xyz);
                 OUT.normalWS = TransformObjectToWorldNormal(IN.normal);
+
+                //float3x3 transposeTangent = transpose(float3x3(IN.WorldSpaceTangent, IN.WorldSpaceBiTangent, IN.WorldSpaceNormal));
+
                 OUT.tangent = IN.tangent;
                 return OUT;
             }
@@ -102,6 +105,9 @@ Shader "Hidden/SH_BrushStrokes"
                 fresnel = smoothstep(_FresnelDebug.x, _FresnelDebug.y, 1-fresnel);
                 //textureSampled = lerp(textureSampled, half3(0.5,0.5,0.5), fresnel);
                 //return half4(IN.pivot,1);
+
+               
+
                 return half4(textureSampled, 1);
             }
 

@@ -128,6 +128,8 @@ public class NormalBlend : ScriptableRendererFeature
             UniversalRenderingData renderingData = frameData.Get<UniversalRenderingData>();
             UniversalCameraData cameraData = frameData.Get<UniversalCameraData>();
 
+            UniversalLightData lightData = frameData.Get<UniversalLightData>();
+
             TextureHandle normalRenderTexture;
             TextureHandle depthRenderTexture;
 
@@ -169,10 +171,10 @@ public class NormalBlend : ScriptableRendererFeature
 
                 FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
                 DrawingSettings drawingSettings = new DrawingSettings(new ShaderTagId(normalShaderTag), sortingSettings);
+
                 RendererListParams listParams = new RendererListParams(renderingData.cullResults, drawingSettings, filteringSettings);
                 passData.rendererListHandle = renderGraph.CreateRendererList(listParams);
                 builder.UseRendererList(passData.rendererListHandle);
-
                 builder.SetRenderFunc((RenderNormalData data, RasterGraphContext context) => ExecuteRenderNormalPass(data, context));
 
             }
@@ -218,7 +220,10 @@ public class NormalBlend : ScriptableRendererFeature
                 };
 
                 FilteringSettings filteringSettings = new FilteringSettings(RenderQueueRange.opaque);
-                DrawingSettings drawingSettings = new DrawingSettings(new ShaderTagId(blendedObjectsShaderTag), sortingSettings);
+                //DrawingSettings drawingSettings = new DrawingSettings(new ShaderTagId(blendedObjectsShaderTag), sortingSettings);
+                DrawingSettings drawingSettings = RenderingUtils.CreateDrawingSettings(new ShaderTagId(blendedObjectsShaderTag), renderingData, cameraData, lightData, SortingCriteria.RenderQueue);
+
+
                 RendererListParams listParams = new RendererListParams(renderingData.cullResults, drawingSettings, filteringSettings);
                 passData.rendererListHandle = renderGraph.CreateRendererList(listParams);
                 builder.UseRendererList(passData.rendererListHandle);

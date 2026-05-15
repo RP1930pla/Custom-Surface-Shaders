@@ -38,11 +38,13 @@
         float2 texcoord     : TEXCOORD0;
         float2 staticLightmapUV   : TEXCOORD1;
         float2 dynamicLightmapUV  : TEXCOORD2;
+        float4 vertexColor : COLOR;
         UNITY_VERTEX_INPUT_INSTANCE_ID
     };
 
     struct Varyings
     {
+        float4 vertexColor : TEXCOORD13;
         float2 uv                       : TEXCOORD0;
         float2 uv1                      : TEXCOORD12;
     #if defined(REQUIRES_WORLD_SPACE_POS_INTERPOLATOR)
@@ -76,8 +78,7 @@
     #ifdef USE_APV_PROBE_OCCLUSION
         float4 probeOcclusion : TEXCOORD10;
     #endif
-
-        float4 positionCS               : SV_POSITION;
+    float4 positionCS               : SV_POSITION;
         UNITY_VERTEX_INPUT_INSTANCE_ID
         UNITY_VERTEX_OUTPUT_STEREO
     };
@@ -232,7 +233,7 @@ Varyings LitPassVertex(Attributes input)
 #endif
 
     output.positionCS = vertexInput.positionCS;
-
+    output.vertexColor = input.vertexColor;
     MODIFY_VERTEX_SHADER(input, output);
 
     return output;
@@ -293,6 +294,7 @@ void LitPassFragment(
     color.rgb = MixFog(color.rgb, inputData.fogCoord);
     color.a = OutputAlpha(color.a, IsSurfaceTypeTransparent(_Surface));
     outColor = color;
+    outColor *= input.vertexColor;
 
     //outColor = half4(inputData.normalWS.xyz,1);
     //outColor = half4(input.positionCS.xy/ input.positionCS.w,0,0);

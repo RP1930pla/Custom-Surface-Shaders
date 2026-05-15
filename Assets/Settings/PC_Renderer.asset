@@ -1,5 +1,47 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-2194056858735824136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: RenderObjects
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.RenderObjects
+  m_Active: 1
+  settings:
+    passTag: RenderObjects
+    Event: 300
+    filterSettings:
+      RenderQueueType: 0
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 0
+      PassNames: []
+    overrideMaterial: {fileID: 0}
+    overrideMaterialPassIndex: 0
+    overrideShader: {fileID: 0}
+    overrideShaderPassIndex: 0
+    overrideMode: 1
+    overrideDepthState: 0
+    depthCompareFunction: 4
+    enableWrite: 1
+    stencilSettings:
+      overrideStencilState: 0
+      stencilReference: 0
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28,7 +70,9 @@ MonoBehaviour:
   - {fileID: 7833122117494664109}
   - {fileID: 4920005216095770540}
   - {fileID: 6126765013112149085}
-  m_RendererFeatureMap: ad6b866f10d7b46cac17753ead5e47445d54d78451a40655
+  - {fileID: 7375527906578727025}
+  - {fileID: -2194056858735824136}
+  m_RendererFeatureMap: ad6b866f10d7b46cac17753ead5e47445d54d78451a4065571009bc68d235b66f8b20a5ee9248de1
   m_UseNativeRenderPass: 1
   xrSystemData: {fileID: 0}
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
@@ -72,7 +116,7 @@ MonoBehaviour:
   m_Active: 1
   settings:
     shaderTagID: BrushStrokesPass
-    material: {fileID: 2100000, guid: 16a2b87474709d549ab0025c4d8cf05b, type: 2}
+    material: {fileID: 2100000, guid: a2a9f23e2383cfe49b7ca7df229fd034, type: 2}
 --- !u!114 &6126765013112149085
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,6 +132,26 @@ MonoBehaviour:
   m_Active: 0
   m_Materials:
   - {fileID: 2100000, guid: 2afed228a2da2c14aa1d945f3c83948f, type: 2}
+--- !u!114 &7375527906578727025
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b803a16e65b51f4fa2bf7d2ebf17774, type: 3}
+  m_Name: NormalBlend
+  m_EditorClassIdentifier: Assembly-CSharp::NormalBlend
+  m_Active: 1
+  settings:
+    layer:
+      serializedVersion: 2
+      m_Bits: 4294967295
+    debug: 0
+    debugMaterial: {fileID: -876546973899608171, guid: 46431739ddeca3e418f13c2a4f7ce2b3, type: 3}
+    blitMaterial: {fileID: 2100000, guid: e31a3f5b86d54234e944e1533c7c4966, type: 2}
 --- !u!114 &7833122117494664109
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102,14 +166,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Active: 0
   m_Settings:
-    AOMethod: 1
+    AOMethod: 0
     Downsample: 0
     AfterOpaque: 0
     Source: 1
     NormalSamples: 1
-    Intensity: 0.98
-    DirectLightingStrength: 0.993
-    Radius: 0.5
+    Intensity: 0.31
+    DirectLightingStrength: 0.083
+    Radius: 0.45
     Samples: 0
     BlurQuality: 0
     Falloff: 100

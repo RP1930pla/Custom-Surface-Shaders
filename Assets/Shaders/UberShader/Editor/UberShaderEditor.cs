@@ -184,9 +184,13 @@ public class UberShaderEditor : ShaderGUI
             cullingModeSelected = (CullingModes)EditorGUILayout.EnumPopup("Render Face", (CullingModes)uberLitProperties._Cull.floatValue);
             SetupFaceCulling(material, cullingModeSelected);
 
+            EditorGUI.BeginChangeCheck();
             blendModeSelected = (BlendModes)EditorGUILayout.EnumPopup("Blend Mode", (BlendModes)uberLitProperties._Blend.floatValue);
             uberLitProperties._Blend.floatValue = (int)blendModeSelected;
-            SetupBlendMode(material, blendModeSelected);
+            if (EditorGUI.EndChangeCheck())
+            {
+                SetupBlendMode(material, blendModeSelected);
+            }
             if (blendModeSelected != BlendModes.Opaque)
             {
                 material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
@@ -327,7 +331,7 @@ public class UberShaderEditor : ShaderGUI
             materialEditor.TexturePropertySingleLine(new GUIContent(uberLitProperties._BrushStrokeTexture.displayName), uberLitProperties._BrushStrokeTexture);
         }
 
-
+        materialEditor.RenderQueueField();
 
     }
 

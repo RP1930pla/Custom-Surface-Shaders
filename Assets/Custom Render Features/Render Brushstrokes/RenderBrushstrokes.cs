@@ -13,7 +13,7 @@ public class RenderBrushstrokes : ScriptableRendererFeature
     public override void Create()
     {
         m_ScriptablePass = new RenderBrushstrokesPass(settings);
-        m_ScriptablePass.renderPassEvent = RenderPassEvent.AfterRenderingSkybox;
+        m_ScriptablePass.renderPassEvent = RenderPassEvent.BeforeRenderingTransparents;
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
@@ -66,7 +66,7 @@ public class RenderBrushstrokes : ScriptableRendererFeature
 
         static void ExecuteBlitPass(BlitPassData data, RasterGraphContext context) 
         {
-            Shader.SetGlobalTexture("_PaintBuffer", data.bufferTexture);
+            Shader.SetGlobalTexture("_BrushStrokeBuffer", data.bufferTexture);
             //data.material.SetTexture(Shader.PropertyToID("_PaintBuffer"), data.bufferTexture);
             Blitter.BlitTexture(context.cmd, data.sourceTexture, new Vector4(1, 1, 0, 0), data.material, 0);
         }
@@ -124,7 +124,7 @@ public class RenderBrushstrokes : ScriptableRendererFeature
                 passData.rendererListHandle = renderGraph.CreateRendererList(listParams);
                 builder.UseRendererList(passData.rendererListHandle);
                 builder.SetRenderAttachmentDepth(brushStrokesRenderTextureDepth, AccessFlags.Write);
-
+                //builder.SetGlobalTextureAfterPass(brushStrokesRenderTexture, Shader.PropertyToID("_BrushStrokeBuffer"));
                 builder.SetRenderFunc((BrushPassData data, RasterGraphContext context) => ExecuteRenderPass(data, context));
             }
 
@@ -137,8 +137,10 @@ public class RenderBrushstrokes : ScriptableRendererFeature
                 passData.bufferTexture = brushStrokesRenderTexture;
                 passData.material = settings.material;
 
-                builder.UseTexture(passData.bufferTexture, AccessFlags.ReadWrite);
+                builder.UseTexture(passData.bufferTexture, AccessFlags.Read);
                 builder.SetRenderAttachment(resourceData.activeColorTexture, 0, AccessFlags.Write);
+
+                //Shader.SetGlobalTexture("_PaintBuffer", passData.bufferTexture);
 
                 //passData.material.SetTexture(Shader.PropertyToID("_PaintBuffer"), passData.bufferTexture);
                 builder.SetRenderFunc((BlitPassData data, RasterGraphContext context) => ExecuteBlitPass(data, context));

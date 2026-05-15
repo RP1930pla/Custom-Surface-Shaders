@@ -56,10 +56,11 @@ Shader "Custom/SH_NormalBlur"
 
                 float2 res = (input.texcoord * 2) * (1/_BlitTexture_TexelSize);
                 //res *= 2;
-                float blueNoise = bluenoise(res + frac(_Time.y * 1));
+                float blueNoise = bluenoise(res + frac(_Time.y * 0.1));
                 float2 randomNoise = Random2DFrom2D(half2(blueNoise, 1-blueNoise));
                 randomNoise = (randomNoise - 0.5)*2;
-                randomNoise *= 0.01;
+                randomNoise *= 0.005;
+                //randomNoise *= 0;
 
                 float4 color = SAMPLE_TEXTURE2D(_BlitTexture, sampler_LinearClamp, (input.texcoord * 2) + randomNoise).rgba;
                 return color;

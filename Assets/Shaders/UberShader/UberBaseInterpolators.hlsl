@@ -14,6 +14,7 @@
 
     struct Attributes
     {
+        float4 vertexColor : COLOR;
         float4 positionOS : POSITION;
         float3 normalOS : NORMAL;
         float4 tangentOS : TANGENT;
@@ -25,6 +26,7 @@
 
     struct Varyings
     {
+        float4 vertexColor : TEXCOORD13;
         float2 uv : TEXCOORD0;
         float2 uv1 : UVDECAL;
         float2 uv2 : UVDECAL_B;
