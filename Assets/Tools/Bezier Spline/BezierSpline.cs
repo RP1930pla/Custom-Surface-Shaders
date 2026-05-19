@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Security.Cryptography;
 using Unity.Burst;
 using Unity.Collections;
@@ -7,14 +8,17 @@ using Unity.Mathematics;
 using Unity.Mathematics.Geometry;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
+[Serializable]
 public class CuadraticSpline 
 {
 
-
+    [SerializeField]
     public Vector3[] controlPoints = new Vector3[4];
 
     //FIla x Columna
+    [HideInInspector]
     public float4x4 splineMatrix = 
         new Matrix4x4(
             new float4(1,0,0,0),
@@ -24,14 +28,17 @@ public class CuadraticSpline
         ).transpose;
 
     int pointsAmount;
+
     NativeArray<PointsList> pointsOnSplineNative;
-    struct PointsList
+    public struct PointsList
     {
         public float3 position;
         public float3 velocity;
     }
 
-    public Vector3[] pointsList;
+    [HideInInspector]
+    [SerializeField]
+    public PointsList[] pointsOnSpline;
 
     public float3 SamplePosition(float t)
     {
@@ -115,10 +122,7 @@ public class CuadraticSpline
         JobHandle updatePointsJobHandle = updatePointJob.Schedule(pointsOnSplineNative.Length, 64);
         updatePointsJobHandle.Complete();
 
-        for (int i = 0; i < pointsOnSplineNative.Length; i++) 
-        {
-            pointsList[i] = pointsOnSplineNative[i].position;
-        }
+        pointsOnSpline = pointsOnSplineNative.ToArray();
     }
 
     [BurstCompile]
@@ -152,6 +156,24 @@ public class CuadraticSpline
 
         }
 
+        public float3 SampleVelocity(float t)
+        {
+            float4x3 controlPointMatrix =
+               new float4x3(
+                   new float4(p0.x, p1.x, p2.x, p3.x),
+                   new float4(p0.y, p1.y, p2.y, p3.y),
+                   new float4(p0.z, p1.z, p2.z, p3.z)
+                   );
+
+
+            float4 A = new float4(0, 1, 2 * t, 3 * math.pow(t, 2));
+            float4 Mat = math.mul(A, splineMatrix);
+
+            Mat.xyz = math.mul(Mat, controlPointMatrix);
+
+            return Mat.xyz;
+        }
+
         public void Execute(int index) 
         {
             PointsList point = points[index];
@@ -159,7 +181,7 @@ public class CuadraticSpline
             float segmentTime = 1f / points.Length;
             float time = index * segmentTime;
             point.position = SamplePosition(time);
-            
+            point.velocity = SampleVelocity(time);
             points[index] = point;
         }
     }
@@ -172,7 +194,7 @@ public class CuadraticSpline
         controlPoints[3] = origin + new float3(10, 0, 0);
         controlPoints[2] = controlPoints[3] - new Vector3(1f, 0, -1f);
         pointsAmount = amountOfPoints;
-        pointsList = new Vector3[amountOfPoints];
+        pointsOnSpline = new PointsList[amountOfPoints];
     }
 
 
@@ -180,16 +202,17 @@ public class CuadraticSpline
 }
 
 [ExecuteInEditMode]
+[Serializable]
 public class BezierSpline : MonoBehaviour
 {
     [SerializeField]
     public CuadraticSpline spline;
-
+    private Bounds bounds;
     private void OnEnable()
     {
         if (spline == null) 
         {
-            spline = new CuadraticSpline(transform.position, 2000);
+            spline = new CuadraticSpline(transform.position, 30);
         }
         spline.InitializeNativeArrays();
     }
@@ -215,14 +238,30 @@ public class BezierSpline : MonoBehaviour
         Gizmos.color = Color.white;
         //Gizmos.DrawLineList(spline.pointsList);
 
-        for (int i = 0; i < spline.pointsList.Length; i++) 
+        for (int i = 0; i < spline.pointsOnSpline.Length; i++) 
         {
-            int clampedNext = Mathf.Clamp(i+1, 0, spline.pointsList.Length-1);
-            Gizmos.DrawLine(spline.pointsList[i], spline.pointsList[clampedNext]);
+            int clampedNext = Mathf.Clamp(i+1, 0, spline.pointsOnSpline.Length-1);
+            Gizmos.DrawLine(spline.pointsOnSpline[i].position, spline.pointsOnSpline[clampedNext].position);
         }
 
-        DrawControlPointsLines();
+        //Gizmos.DrawLine(spline.pointsOnSpline[spline.pointsOnSpline.Length-1].position, spline.controlPoints[3]);
 
+        DrawControlPointsLines();
+        Gizmos.color = new Color(1f, 1f, 1f, 0.2f);
+        Gizmos.DrawCube(bounds.center, bounds.size);
+    }
+
+    public void UpdateBounds() 
+    {
+        bounds = new Bounds();
+        bounds.size = Vector3.zero;
+        for (int i = 0; i < spline.pointsOnSpline.Length; i++)
+        {
+            bounds.Encapsulate(spline.pointsOnSpline[i].position);
+        }
+
+        bounds.Encapsulate(spline.controlPoints[3]);
+        
     }
 
     void DrawControlPointsLines() 
@@ -268,7 +307,9 @@ public class BezierSplineEditor : Editor
             script.spline.controlPoints[1] = Handles.PositionHandle(script.spline.controlPoints[1], qt);
             script.spline.controlPoints[2] = Handles.PositionHandle(script.spline.controlPoints[2], qt);
             script.spline.controlPoints[3] = Handles.PositionHandle(script.spline.controlPoints[3], qt);
+            script.UpdateBounds();
         }
+
         //Handles.PositionHandle(script.spline.controlPoints[1], qt);
     }
 
