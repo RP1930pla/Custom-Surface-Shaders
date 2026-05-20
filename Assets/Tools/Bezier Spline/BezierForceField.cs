@@ -3,7 +3,11 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
+using UnityEditor;
 using UnityEngine;
+using System;
+using static UnityEditor.FilePathAttribute;
+using System.Collections.Generic;
 
 [ExecuteInEditMode]
 public class BezierForceField : MonoBehaviour
@@ -11,8 +15,8 @@ public class BezierForceField : MonoBehaviour
     public Bounds bounds;
     BezierSpline[] bezierSplines;
     public int maxVoxelQuantity = 64;
-    
-    Vector3 voxelGridSize;
+
+    public Vector3 voxelGridSize;
     NativeArray<float3> voxelGridPositions;
     NativeArray<float4> voxelGridVelocity;
 
@@ -26,8 +30,12 @@ public class BezierForceField : MonoBehaviour
 
     CombinedSplines[] splineList;
 
-    float voxelSize;
+    [HideInInspector]
+    public float voxelSize;
+    public Vector3 scale;
     public Texture3D voxelTexture;
+
+    public Vector3 Rotation;
 
     public void InitializeNativeArrays()
     {
@@ -104,7 +112,7 @@ public class BezierForceField : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         DrawBounds();
-        DrawVoxelGridGizmos();
+        //DrawVoxelGridGizmos();
     }
 
     void DrawVoxelGridGizmos()
@@ -198,7 +206,7 @@ public class BezierForceField : MonoBehaviour
             voxelColors[i] = new Color(voxelGridVelocity[i].x, voxelGridVelocity[i].y, voxelGridVelocity[i].z, voxelGridVelocity[i].w);
         }
 
-        voxelTexture = new Texture3D((int)voxelGridSize.z, (int)voxelGridSize.y, (int)voxelGridSize.x, TextureFormat.RGBA32_SIGNED, false);
+        voxelTexture = new Texture3D((int)voxelGridSize.x, (int)voxelGridSize.y, (int)voxelGridSize.z, TextureFormat.RGBA32_SIGNED, false);
         voxelTexture.SetPixels(voxelColors);
         voxelTexture.Apply();
     }
@@ -209,13 +217,34 @@ public class BezierForceField : MonoBehaviour
 
         if (splineListNative.IsCreated) splineListNative.Dispose();
 
+        int maxPoints = 0;
+
+        if (bezierSplines != null) 
+        {
+            for (int i = 0; i < bezierSplines.Length; i++) 
+            {
+                maxPoints += bezierSplines[i].spline.pointsAmount;
+            }
+        }
+
+        Debug.Log("Max Points: " + maxPoints);
+
         if (bezierSplines != null)
         {
-            splineListNative = new NativeArray<CuadraticSpline.PointsList>(bezierSplines.Length * 30, Allocator.Persistent);
+            splineListNative = new NativeArray<CuadraticSpline.PointsList>(maxPoints, Allocator.Persistent);
+            Debug.Log(bezierSplines.Length);
+
+            List<CuadraticSpline.PointsList> points = new List<CuadraticSpline.PointsList> ();
+            //CuadraticSpline.PointsList[] points = new CuadraticSpline.PointsList[maxPoints];
+            //Debug.Log("Points Lenght: " + points.Length);
+            int copyToIndex = 0;
             for (int i = 0;i < bezierSplines.Length; i++) 
             {
-                splineListNative.CopyFrom(bezierSplines[i].spline.pointsOnSpline);
+                    Debug.Log("Length of first Array" + bezierSplines[i].spline.pointsOnSpline.Length);
+                    points.AddRange(bezierSplines[i].spline.pointsOnSpline);
+
             }
+            splineListNative.CopyFrom(points.ToArray());
         }
 
 
@@ -277,9 +306,10 @@ public class BezierForceField : MonoBehaviour
 
             float remappedDistance = 1 - math.remap(0, 1, 0, 1, dt);
             remappedDistance = math.clamp(remappedDistance, 0, 1);
+            remappedDistance = math.smoothstep(0.0f, 0.5f, remappedDistance);
             //voxelVelocity = 1-remappedDistance;
             voxelVelocity = new float4(splineList[closestIndex].velocity.x, splineList[closestIndex].velocity.y, splineList[closestIndex].velocity.z, remappedDistance);
-            voxelVelocities[index] = math.normalize(voxelVelocity) * remappedDistance;
+            voxelVelocities[index] = math.normalize(voxelVelocity) ;
 
 
 
@@ -287,4 +317,57 @@ public class BezierForceField : MonoBehaviour
         }
     }
 
+}
+
+[CustomEditor(typeof(BezierForceField))]
+public class BezierForceFieldEditor : Editor 
+{
+    BezierForceField script;
+    public override void OnInspectorGUI()
+    {
+        script = (BezierForceField)target;
+        base.OnInspectorGUI();
+    }
+
+    private void OnSceneViewGUI(SceneView sv)
+    {
+        script = (BezierForceField)target;
+        if (script.voxelTexture != null && script != null)
+        {
+            //Transform transform = script.transform;
+            //Vector3 size = new Vector3((int)script.voxelGridSize.x, script.voxelGridSize.y, script.voxelGridSize.z) * script.voxelSize;
+            //size.x = size.x / ((int)script.voxelGridSize.x * 0.1f);
+            //size.y = size.y / ((int)script.voxelGridSize.y * 0.1f);
+            //size.z = size.z / ((int)script.voxelGridSize.z * 0.1f);
+            //size *= 4;
+            ////size.Scale(script.scale);
+
+            //Matrix4x4 LtW = Matrix4x4.TRS(script.bounds.center, Quaternion.Euler(script.Rotation), size);
+            
+            //Handles.matrix = LtW;
+            //Handles.DrawTexture3DVolume(script.voxelTexture, 1, 1);
+            //Transform transform = script.transform;
+            //Vector3 size = new Vector3((int)script.voxelGridSize.x, script.voxelGridSize.y, script.voxelGridSize.z) * script.voxelSize;
+            //size.x = size.x / ((int)script.voxelGridSize.x * 0.1f);
+            //size.y = size.y / ((int)script.voxelGridSize.y * 0.1f);
+            //size.z = size.z / ((int)script.voxelGridSize.z * 0.1f);
+            //size *= 4;
+            ////size.Scale(script.scale);
+
+            //Matrix4x4 LtW = Matrix4x4.TRS(script.bounds.center, Quaternion.Euler(script.Rotation), size);
+            
+            //Handles.matrix = LtW;
+            //Handles.DrawTexture3DVolume(script.voxelTexture, 1, 1);
+        }
+    }
+
+    void OnEnable()
+    {
+        SceneView.duringSceneGui += OnSceneViewGUI;
+    }
+
+    void OnDisable()
+    {
+        SceneView.duringSceneGui -= OnSceneViewGUI;
+    }
 }

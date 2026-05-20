@@ -27,7 +27,7 @@ public class CuadraticSpline
             new float4(-1,3,-3,1)
         ).transpose;
 
-    int pointsAmount;
+    public int pointsAmount;
 
     NativeArray<PointsList> pointsOnSplineNative;
     public struct PointsList
@@ -309,7 +309,7 @@ public class BezierSplineEditor : Editor
             script.spline.controlPoints[3] = Handles.PositionHandle(script.spline.controlPoints[3], qt);
             script.UpdateBounds();
         }
-
+        
         //Handles.PositionHandle(script.spline.controlPoints[1], qt);
     }
 
